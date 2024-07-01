@@ -8,14 +8,14 @@ from data import ErrorMessages
 class TestLoginUser:
     @allure.title('Успешная авторизация')
     def test_login_existing_user(self, user):
-        data = user
-        requests.post(urls.REGISTER_USER, json=data)
-        response_2 = requests.post(urls.LOGIN_USER, json=data)
-        assert response_2.status_code == 200 and response_2.json()['success'] is True
+        data = user[1]
+        del data["name"]
+        response = requests.post(urls.LOGIN_USER, json=data)
+        assert response.status_code == 200 and response.json()['success'] is True
 
     @allure.title('Авторизация с неверным логином')
     def test_login_user_incorrect_email_error(self, user):
-        data = user.copy()
+        data = user[1]
         data["email"] = 'new_incorrect_email'
         response = requests.post(urls.LOGIN_USER, json=data)
         assert response.status_code == 401
@@ -23,7 +23,7 @@ class TestLoginUser:
 
     @allure.title('Авторизация с неверным паролем')
     def test_login_user_incorrect_password_error(self, user):
-        data = user.copy()
+        data = user[1]
         data["password"] = 'new_incorrect_password'
         response = requests.post(urls.LOGIN_USER, json=data)
         assert response.status_code == 401
